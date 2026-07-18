@@ -2,13 +2,14 @@ import {
   jobListSearchEl,
   jobDetailsContentEl,
   spinnerJobDetailsEl,
-  BASE_API_URL
+  BASE_API_URL,
 } from "../common.js";
 import renderSpinner from "./spinner.js";
+import renderError from "./Error.js";
 
-const renderJobList = jobItems =>{
-          jobItems.slice(0, 7).forEach((jobItem) => {
-        const jobItemHtml = `
+const renderJobList = (jobItems) => {
+  jobItems.slice(0, 7).forEach((jobItem) => {
+    const jobItemHtml = `
             <li class="job-item">
                         <a class="job-item__link" href="${jobItem.id}">
                             <div class="job-item__badge">${jobItem.badgeLetters}</div>
@@ -28,11 +29,11 @@ const renderJobList = jobItems =>{
                         </a>
                     </li>
             `;
-        jobListSearchEl.insertAdjacentHTML("beforeend", jobItemHtml);
-      });
-}
+    jobListSearchEl.insertAdjacentHTML("beforeend", jobItemHtml);
+  });
+};
 
-const clickHandler = (event) => {
+const clickHandler = async (event) => {
   event.preventDefault();
   const jobItemEl = event.target.closest(".job-item");
 
@@ -46,21 +47,20 @@ const clickHandler = (event) => {
   jobDetailsContentEl.innerHTML = "";
   spinnerJobDetailsEl.classList.add("spinner--visible");
   const jobId = jobItemEl.children[0].getAttribute("href");
-  fetch(`${BASE_API_URL}/jobs/${jobId}`)
-    .then((Response) => {
-      if (!Response.ok) {
-        console.log("wrong");
-        return;
-      }
-      return Response.json();
-    })
-    .then((data) => {
-      const { jobItem } = data;
-      renderSpinner("jobList");
+  let jobItem;
+  try {
+    const response = await fetch(`${BASE_API_URL}/jobs/${jobId}`);
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.description);
+    }
+    jobItem = data.jobItem;
+    renderSpinner("jobList");
+  } catch (error) {
+    renderSpinner("jobList");
+  }
 
-      console.log(jobItem);
-
-      const detail = `
+  const detail = `
         
 <img src="${jobItem.coverImgURL}" alt="#" class="job-details__cover-img">
 
@@ -115,9 +115,7 @@ const clickHandler = (event) => {
     <p class="job-details__footer-text">If possible, please reference that you found the job on <span class="u-bold">rmtDev</span>, we would really appreciate it!</p>
 </footer>
         `;
-      jobDetailsContentEl.innerHTML = detail;
-    })
-    .catch((err) => console.log(err));
+  jobDetailsContentEl.innerHTML = detail;
 };
 
 jobListSearchEl.addEventListener("click", clickHandler);
