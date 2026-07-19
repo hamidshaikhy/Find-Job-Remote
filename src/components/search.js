@@ -3,6 +3,7 @@ import {
   searchInputEl,
   searchFormEl,
   spinnerSearchEl,
+  state,
   numberEl,
   BASE_API_URL,
 } from "../common.js";
@@ -32,23 +33,25 @@ const submitHandler = async (event) => {
     const response = await fetch(`${BASE_API_URL}/jobs?search=${searchText}`);
     const data = await response.json();
 
-    if(!response.ok){
+    if (!response.ok) {
       throw new Error(data.description);
     }
 
     //get jobitems
     const { jobItems } = data;
 
+    //update state
+    state.searchJobItems = jobItems;
+
     //clear spinner
     renderSpinner("search");
 
     numberEl.textContent = jobItems.length;
 
-    renderJobList(jobItems);
+    renderJobList();
   } catch (error) {
-      renderSpinner("search");
-      renderError(error.userError);
+    renderSpinner("search");
+    renderError(error.userError);
   }
-
 };
 searchFormEl.addEventListener("submit", submitHandler);

@@ -40,3 +40,8 @@ export const spinnerSearchEl = document.querySelector(".spinner--search");
 export const spinnerJobDetailsEl = document.querySelector(
   ".spinner--job-details",
 );
+
+//state
+export const state = {
+  searchJobItems: [],
+};
