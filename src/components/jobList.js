@@ -4,14 +4,20 @@ import {
   spinnerJobDetailsEl,
   BASE_API_URL,
   state,
+  ITEM_SIZE_PER_PAGE,
 } from "../common.js";
 import renderSpinner from "./spinner.js";
 import renderError from "./Error.js";
 
 const renderJobList = () => {
   jobListSearchEl.innerHTML = "";
-  state.searchJobItems.slice(0, 7).forEach((jobItem) => {
-    const jobItemHtml = `
+  state.searchJobItems
+    .slice(
+      state.currentPage * ITEM_SIZE_PER_PAGE - ITEM_SIZE_PER_PAGE,
+      state.currentPage * ITEM_SIZE_PER_PAGE,
+    )
+    .forEach((jobItem) => {
+      const jobItemHtml = `
             <li class="job-item">
                         <a class="job-item__link" href="${jobItem.id}">
                             <div class="job-item__badge">${jobItem.badgeLetters}</div>
@@ -31,8 +37,8 @@ const renderJobList = () => {
                         </a>
                     </li>
             `;
-    jobListSearchEl.insertAdjacentHTML("beforeend", jobItemHtml);
-  });
+      jobListSearchEl.insertAdjacentHTML("beforeend", jobItemHtml);
+    });
 };
 
 const clickHandler = async (event) => {
@@ -49,6 +55,8 @@ const clickHandler = async (event) => {
   jobDetailsContentEl.innerHTML = "";
   spinnerJobDetailsEl.classList.add("spinner--visible");
   const jobId = jobItemEl.children[0].getAttribute("href");
+  history.pushState(null, "", `/#${jobId}`);
+
   let jobItem;
   try {
     const response = await fetch(`${BASE_API_URL}/jobs/${jobId}`);
