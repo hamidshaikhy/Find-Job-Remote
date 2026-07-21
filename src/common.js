@@ -1,5 +1,6 @@
 //constants
 export const BASE_API_URL = "https://bytegrad.com/course-assets/js/2/api";
+export const ITEM_SIZE_PER_PAGE = 7;
 
 //selectors
 export const bookmarksBtnEl = document.querySelector(".bookmarks-btn");
@@ -44,4 +45,5 @@ export const spinnerJobDetailsEl = document.querySelector(
 //state
 export const state = {
   searchJobItems: [],
+  currentPage: 1,
 };
