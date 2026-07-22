@@ -46,4 +46,5 @@ export const spinnerJobDetailsEl = document.querySelector(
 export const state = {
   searchJobItems: [],
   currentPage: 1,
+  bookmarkJobItem: [],
 };
